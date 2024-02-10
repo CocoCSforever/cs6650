@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="Assignment1_yijia:war2">
-    <output-path>$PROJECT_DIR$/out/artifacts/Assignment1_yijia_war2</output-path>
-    <root id="archive" name="Assignment1_yijia_war.war">
-      <element id="artifact" artifact-name="Assignment1_yijia:war exploded" />
-    </root>
-  </artifact>
-</component>

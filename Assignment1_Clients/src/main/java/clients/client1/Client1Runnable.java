@@ -5,7 +5,7 @@ import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
 import io.swagger.client.api.SkiersApi;
 import io.swagger.client.model.LiftRide;
-
+import com.squareup.okhttp.OkHttpClient;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +15,8 @@ import java.util.concurrent.*;
 public class Client1Runnable implements Runnable {
     private static int successCounter = 0;
     private static int failCounter = 0;
-    private static int maxRetries = 5;
-    public static final ExecutorService executor = Executors.newFixedThreadPool(33);
+    private static final int maxRetries = 5;
+    public static final ExecutorService executor = Executors.newFixedThreadPool(16);
     private String name;
     private CountDownLatch latch;
     private SkiersApi api;
@@ -24,12 +24,18 @@ public class Client1Runnable implements Runnable {
 
 
     // default constructor
-    public Client1Runnable() {}
+    public Client1Runnable() {
+        this.api = new SkiersApi(new ApiClient());
+        this.requestPerThread = 1;
+    }
 
     public Client1Runnable(String threadName, CountDownLatch latch, int requestPerThread) {
 //        System.out.println("Constructor called: " + threadName) ;
         this.name = threadName ;
         this.latch = latch;
+        ApiClient apiClient = new ApiClient();
+        OkHttpClient okHttpClient = apiClient.getHttpClient();
+        okHttpClient.setConnectTimeout(5000, java.util.concurrent.TimeUnit.MILLISECONDS);
         this.api = new SkiersApi(new ApiClient());
         this.requestPerThread = requestPerThread;
     }
@@ -41,9 +47,10 @@ public class Client1Runnable implements Runnable {
     public void run() {
         System.out.println("running: " + name + getSuccessCounter()) ;
         Random r = new Random();
-        CountDownLatch currentLatch = new CountDownLatch(requestPerThread);
-        for(int i = 0; i < requestPerThread; i++) {
-            api.getApiClient().setBasePath("http://184.73.133.33:8080/Assignment1_yijia/");
+        CountDownLatch currentLatch = new CountDownLatch(1);
+//        for(int i = 0; i < requestPerThread; i++) {
+            api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war_exploded/");
+//            api.getApiClient().setBasePath("http://184.73.133.33:8080/Assignment1_yijia/");
             LiftRide body = new LiftRide(r.nextInt(360) + 1, r.nextInt(40) + 1);
             Integer resortID = r.nextInt(10) + 1;
             String seasonID = "2024";
@@ -54,7 +61,7 @@ public class Client1Runnable implements Runnable {
                 @Override
                 public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
                     // Handle failure
-//                    System.out.println("API call failed. Status code: " + statusCode);
+//                    System.out.println("API call failed.Status code: " + statusCode);
                     e.printStackTrace();
                     incrementFailCounter();
                 }
@@ -64,7 +71,7 @@ public class Client1Runnable implements Runnable {
                     // Handle success
 //                    System.out.println("API call successful. Status code: " + statusCode);
                     incrementSuccessCounter();
-                    currentLatch.countDown();
+//                    currentLatch.countDown();
                 }
 
                 @Override
@@ -77,11 +84,11 @@ public class Client1Runnable implements Runnable {
                     // Handle download progress
                 }
             });
-        }
+//        }
 
         try{
             currentLatch.await();
-            latch.countDown();
+//            latch.countDown();
         }catch (InterruptedException e){
 
         }

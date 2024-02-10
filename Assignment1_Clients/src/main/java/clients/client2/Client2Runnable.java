@@ -43,7 +43,7 @@ public class Client2Runnable implements Runnable {
     public void run() {
         Random r = new Random();
         for (int i = 0; i < requestPerThread; i++) {
-            api.getApiClient().setBasePath("http://localhost:8080/Assignment1_yijia_war_exploded");
+            api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war_exploded/");
             LiftRide body = new LiftRide(r.nextInt(360) + 1, r.nextInt(40) + 1);
             Integer resortID = r.nextInt(10) + 1;
             String seasonID = "2024";
@@ -62,7 +62,7 @@ public class Client2Runnable implements Runnable {
                         public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
                             // Handle failure
                             System.out.println("API call failed. Status code: " + statusCode);
-                            e.printStackTrace();
+//                            e.printStackTrace();
                             future.completeExceptionally(e);
                             incrementFailCounter();
                         }

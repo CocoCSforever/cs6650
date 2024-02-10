@@ -16,6 +16,6 @@ public class Client2_Multi_Threads {
         System.out.println("1. number of successful requests sent: " + Client2Runnable.getSuccessCounter());
         System.out.println("2. number of unsuccessful requests (should be 0): " + Client2Runnable.getFailCounter());
         System.out.println("3. total run time (wall time) for all phases to complete: " + time);
-        System.out.println("4. total throughput in requests per second : " + Client2Runnable.getSuccessCounter()/time);
+        System.out.println("4. total throughput in requests per second : " + 1.0*Client2Runnable.getSuccessCounter()/time);
     }
 }

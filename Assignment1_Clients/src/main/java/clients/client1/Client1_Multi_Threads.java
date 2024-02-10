@@ -7,12 +7,12 @@ public class Client1_Multi_Threads {
         long startTime = System.currentTimeMillis();
 //        System.out.println(Thread.currentThread() + ":" + );
         Client1ThreadHelper.client1StartNThreads(32, 1000);
-//        Client1ThreadHelper.client1StartNThreads(32, 5250);
+        Client1ThreadHelper.client1StartNThreads(32, 5250);
         long time = System.currentTimeMillis()-startTime;
 //        System.out.println(Thread.currentThread() + ":" + System.currentTimeMillis());
 
-        Client1ThreadHelper.executor.shutdown();
-        Client1Runnable.executor.shutdown();
+//        Client1ThreadHelper.executor.shutdown();
+//        Client1Runnable.executor.shutdown();
         System.out.println("1. number of successful requests sent: " + Client1Runnable.getSuccessCounter());
         System.out.println("2. number of unsuccessful requests (should be 0): " + Client1Runnable.getFailCounter());
         System.out.println("3. total run time (wall time) for all phases to complete: " + time);
