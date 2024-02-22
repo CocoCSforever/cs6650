@@ -32,7 +32,6 @@ public class SocketClientThread extends Thread {
         this.hostName = hostName;
         this.port = port;
         synk = barrier;
-        
     }
     
     @Override

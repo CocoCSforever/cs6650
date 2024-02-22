@@ -20,16 +20,18 @@ import java.util.concurrent.CyclicBarrier;
 
 public class SocketClientThread extends Thread {
     private long clientID;
-    String hostName;
-    int port;
-    CyclicBarrier synk;
+    private String hostName;
+    private int port;
+    private final CyclicBarrier barrier;
+    private static int MAX_ITERATIONS = 1000;
+    private PrintWriter out;
+    private BufferedReader in;
     
     public SocketClientThread(String hostName, int port, CyclicBarrier barrier) {
         this.hostName = hostName;
         this.port = port;
-        clientID = Thread.currentThread().getId();
-        synk = barrier;
-        
+//        this.clientID = Thread.currentThread().getId();
+        this.barrier = barrier;
     }
     
     public void run() {
@@ -37,18 +39,39 @@ public class SocketClientThread extends Thread {
         try {
             // TO DO insert code to pass 1k messages to the SocketServer
             Socket s = new Socket(hostName, port);
-           
-        
+            clientID = Thread.currentThread().getId();
+            out = new PrintWriter(s.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            for(int i = 0; i < MAX_ITERATIONS; i++){
+                System.out.println(i);
+                out.println("ClientThread" + clientID + ": ClientMessage" + i);
+                System.out.println(in.readLine());
+                System.out.println("get server response");
+            }
+            barrier.await();
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException | BrokenBarrierException e) {
             System.err.println("Couldn't get I/O for the connection to " +
                 hostName);
             System.exit(1);
-        } 
+        } finally {
+            try {
+                in.close();
+                out.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         
         // TO DO insert code to wait on the CyclicBarrier
-        
+//        try {
+//            in.close();
+//            out.close();
+////            synk.await();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 }

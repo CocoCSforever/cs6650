@@ -48,6 +48,4 @@ public class SocketClientMultithreaded {
         System.out.println("Terminating ....");
                 
     }
-
-      
 }
