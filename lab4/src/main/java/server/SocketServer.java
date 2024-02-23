@@ -22,27 +22,19 @@ import java.util.concurrent.Executors;
 
 
 public class SocketServer {
-  private static final int THREAD_POOL_SIZE = 50;
 
   public static void main(String[] args) throws Exception {
-    ServerSocket m_ServerSocket;
-//    ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-    try {
-      // create socket listener
-      m_ServerSocket = new ServerSocket(12031);
+    // create socket listener
+    ServerSocket m_ServerSocket = new ServerSocket(12031);
 
-      // create object to count active threads
-      ActiveCount threadCount = new ActiveCount();
-      System.out.println("Server started .....");
-      while (true) {
-        // accept connection and start thread
-        Socket clientSocket = m_ServerSocket.accept();
-//        threadPool.submit(new SocketHandlerThread(clientSocket, threadCount));
-        SocketHandlerThread server = new SocketHandlerThread (clientSocket, threadCount);
-        server.start();
-      }
-    } finally {
-//      threadPool.shutdown();
+    // create object to count active threads
+    ActiveCount threadCount = new ActiveCount();
+    System.out.println("Server started .....");
+    while (true) {
+      // accept connection and start thread
+      Socket clientSocket = m_ServerSocket.accept();
+      SocketHandlerThread server = new SocketHandlerThread (clientSocket, threadCount);
+      server.start();
     }
   }
 }

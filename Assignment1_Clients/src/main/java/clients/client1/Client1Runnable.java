@@ -111,7 +111,7 @@ public class Client1Runnable implements Runnable {
                 }
 //                e.printStackTrace();
             }
-        }, executor);
+        });
 
         future.whenComplete((result, exception) -> {
             if (exception != null) {

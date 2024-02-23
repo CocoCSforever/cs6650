@@ -23,8 +23,8 @@ public class SocketClientThread extends Thread {
     private int port;
     private final CyclicBarrier barrier;
     private static int MAX_ITERATIONS = 1000;
-    private PrintWriter out;
-    private BufferedReader in;
+//    private PrintWriter out;
+//    private BufferedReader in;
     
     public SocketClientThread(String hostName, int port, CyclicBarrier barrier) {
         this.hostName = hostName;
@@ -40,12 +40,13 @@ public class SocketClientThread extends Thread {
             try {
                 s = new Socket(hostName, port);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+//                throw new RuntimeException(e);
+                break;
             }
             try {
                 clientID = Thread.currentThread().getId();
-                out = new PrintWriter(s.getOutputStream(), true);
-                in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
 
 //                System.out.println(i);
                 out.println("ClientThread" + clientID + ": ClientMessage" + i);
@@ -54,20 +55,18 @@ public class SocketClientThread extends Thread {
 
             } catch (UnknownHostException e) {
                 System.err.println("Don't know about host " + hostName);
-                System.exit(1);
+                break;
+//                System.exit(1);
             } catch (IOException e) {
                 System.err.println("Couldn't get I/O for the connection to " +
                         hostName);
-                System.exit(1);
+                break;
+//                System.exit(1);
             }
         }
         try {
-            in.close();
-            out.close();
             barrier.await();
         } catch (InterruptedException | BrokenBarrierException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

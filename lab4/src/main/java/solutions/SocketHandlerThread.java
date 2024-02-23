@@ -31,20 +31,13 @@ class SocketHandlerThread extends Thread {
       BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
       PrintWriter out = new PrintWriter(new OutputStreamWriter(conn.getOutputStream()), true);
       
-//      String clientID = in.readLine();
-      String clientID;
-      while( (clientID = in.readLine()) != null){
-        System.out.println(clientID);
-        out.println("Active Server Thread Count = " + Integer.toString( threadCount.getCount() ));
-        System.out.println("Reply sent");
-      }
-      System.out.println("All Replies sent");
-      // Uncomment to see what client sent
+      String clientID = in.readLine();
+//      Uncomment to see what client sent
 //      System.out.println(clientID);
-//      out.println("Active Server Thread Count = " + Integer.toString( threadCount.getCount() ));
-//      out.flush();
-      // uncomment to ensure reply sent
-//       System.out.println("Reply sent");
+      out.println("Active Server Thread Count = " + Integer.toString( threadCount.getCount() ));
+      out.flush();
+//       uncomment to ensure reply sent
+//      System.out.println("Reply sent");
     } catch (IOException e) {
         System.out.println("Exception in thread");
     } finally {

@@ -24,7 +24,7 @@ public class SocketClientMultithreaded {
     
     public static void main(String[] args) throws BrokenBarrierException, InterruptedException {
         String hostName;
-        final int MAX_THREADS = 50 ;
+        final int MAX_THREADS = 20;
         int port;
         
         if (args.length == 2) {
@@ -36,6 +36,7 @@ public class SocketClientMultithreaded {
         }
         barrier = new CyclicBarrier(MAX_THREADS+1);
 
+        System.out.println("Client threads: " + MAX_THREADS + " , without Server Thread Pool");
         System.out.println(System.currentTimeMillis());
         // TO DO create and start MAX_THREADS SocketClientThread
         for(int i = 0; i < MAX_THREADS; i++){

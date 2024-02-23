@@ -32,8 +32,18 @@ class SocketHandlerThread extends Thread {
       out.println("Active Server Thread Count = " + Integer.toString( threadCount.getCount() ));
       out.flush();
 //      System.out.println("Reply sent");
-      in.close();
-      out.close();
+//      in.close();
+//      out.close();
+
+
+      // yijia's version
+//      String clientID;
+//      while( (clientID = in.readLine()) != null){
+//        System.out.println(clientID);
+//        out.println("Active Server Thread Count = " + Integer.toString( threadCount.getCount() ));
+//        System.out.println("Reply sent");
+//      }
+//      System.out.println("All Replies sent");
     } catch (Exception e) {
            e.printStackTrace();
     }
