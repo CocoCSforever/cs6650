@@ -47,10 +47,10 @@ public class SocketClientThread extends Thread {
                 out = new PrintWriter(s.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(s.getInputStream()));
 
-                System.out.println(i);
+//                System.out.println(i);
                 out.println("ClientThread" + clientID + ": ClientMessage" + i);
                 System.out.println(in.readLine());
-                System.out.println("get server response");
+//                System.out.println("get server response");
 
             } catch (UnknownHostException e) {
                 System.err.println("Don't know about host " + hostName);
@@ -62,20 +62,13 @@ public class SocketClientThread extends Thread {
             }
         }
         try {
-//            in.close();
-//            out.close();
+            in.close();
+            out.close();
             barrier.await();
         } catch (InterruptedException | BrokenBarrierException e) {
             throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
-        
-        // TO DO insert code to wait on the CyclicBarrier
-//        try {
-//            in.close();
-//            out.close();
-////            synk.await();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
 }

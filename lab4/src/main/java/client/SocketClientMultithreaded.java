@@ -35,7 +35,8 @@ public class SocketClientMultithreaded {
             port = 12031;  // default port in SocketServer
         }
         barrier = new CyclicBarrier(MAX_THREADS+1);
-        
+
+        System.out.println(System.currentTimeMillis());
         // TO DO create and start MAX_THREADS SocketClientThread
         for(int i = 0; i < MAX_THREADS; i++){
             Thread thread = new SocketClientThread(hostName, port, barrier);
@@ -43,10 +44,8 @@ public class SocketClientMultithreaded {
         }
         // TO DO wait for all threads to compile
         barrier.await();
+        System.out.println(System.currentTimeMillis());
         
         System.out.println("Terminating ....");
-                
     }
-
-      
 }
