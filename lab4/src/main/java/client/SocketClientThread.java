@@ -17,7 +17,6 @@ import java.util.concurrent.CyclicBarrier;
 
 // Sockets of this class are coordinated  by a CyclicBarrier which pauses all threads 
 // until the last one completes. At this stage, all threads terminate
-
 public class SocketClientThread extends Thread {
     private long clientID;
     private String hostName;
@@ -35,35 +34,41 @@ public class SocketClientThread extends Thread {
     }
     
     public void run() {
-        
-        try {
+        for (int i = 0; i < MAX_ITERATIONS; i++) {
             // TO DO insert code to pass 1k messages to the SocketServer
-            Socket s = new Socket(hostName, port);
-            clientID = Thread.currentThread().getId();
-            out = new PrintWriter(s.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            for(int i = 0; i < MAX_ITERATIONS; i++){
+            Socket s = null;
+            try {
+                s = new Socket(hostName, port);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                clientID = Thread.currentThread().getId();
+                out = new PrintWriter(s.getOutputStream(), true);
+                in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+
                 System.out.println(i);
                 out.println("ClientThread" + clientID + ": ClientMessage" + i);
                 System.out.println(in.readLine());
                 System.out.println("get server response");
-            }
-            barrier.await();
-        } catch (UnknownHostException e) {
-            System.err.println("Don't know about host " + hostName);
-            System.exit(1);
-        } catch (IOException | InterruptedException | BrokenBarrierException e) {
-            System.err.println("Couldn't get I/O for the connection to " +
-                hostName);
-            System.exit(1);
-        } finally {
-            try {
-                in.close();
-                out.close();
+
+            } catch (UnknownHostException e) {
+                System.err.println("Don't know about host " + hostName);
+                System.exit(1);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.err.println("Couldn't get I/O for the connection to " +
+                        hostName);
+                System.exit(1);
             }
         }
+        try {
+//            in.close();
+//            out.close();
+            barrier.await();
+        } catch (InterruptedException | BrokenBarrierException e) {
+            throw new RuntimeException(e);
+        }
+    }
         
         // TO DO insert code to wait on the CyclicBarrier
 //        try {
@@ -73,5 +78,4 @@ public class SocketClientThread extends Thread {
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
-    }
 }

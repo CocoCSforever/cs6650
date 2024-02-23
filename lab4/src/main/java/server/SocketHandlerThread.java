@@ -43,5 +43,4 @@ class SocketHandlerThread extends Thread {
     threadCount.decrementCount();
     System.out.println("Thread exiting");
   }
-  
 } //end class

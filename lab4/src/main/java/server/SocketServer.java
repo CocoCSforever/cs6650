@@ -32,7 +32,6 @@ public class SocketServer {
       Socket clientSocket = m_ServerSocket.accept();
       SocketHandlerThread server = new SocketHandlerThread (clientSocket, threadCount);
       server.start();
-     
     }
   }
 }
