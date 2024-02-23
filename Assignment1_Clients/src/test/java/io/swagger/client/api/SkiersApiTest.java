@@ -92,7 +92,7 @@ public class SkiersApiTest {
     @Test
     public void client2SingleRequestTimeTest() throws Exception {
         long startTime = System.currentTimeMillis();
-        client2StartNThreads(1, 10000, "test.csv");
+        client2StartNThreads(20, 10000, "test.csv");
         System.out.println("total run time (wall time) for 10000 request/thread to complete: " + 1.0*(System.currentTimeMillis()-startTime)/ Client2Runnable.getSuccessCounter());
     }
 }

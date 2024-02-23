@@ -3,6 +3,7 @@ package clients.client2;
 import io.swagger.client.ApiCallback;
 import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
+import io.swagger.client.ApiResponse;
 import io.swagger.client.api.SkiersApi;
 import io.swagger.client.model.LiftRide;
 
@@ -43,7 +44,7 @@ public class Client2Runnable implements Runnable {
     public void run() {
         Random r = new Random();
         for (int i = 0; i < requestPerThread; i++) {
-            api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war_exploded/");
+            api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war/");
             LiftRide body = new LiftRide(r.nextInt(360) + 1, r.nextInt(40) + 1);
             Integer resortID = r.nextInt(10) + 1;
             String seasonID = "2024";
@@ -56,21 +57,21 @@ public class Client2Runnable implements Runnable {
             while (retryCount < maxRetries) {
                 try {
                     long startTime = System.currentTimeMillis();
-                    CompletableFuture<Void> future = new CompletableFuture<>();
+                    CompletableFuture<ApiResponse<Void>> future = new CompletableFuture<>();
                     api.writeNewLiftRideAsync(body, resortID, seasonID, dayID, skierID, new ApiCallback<Void>() {
                         @Override
                         public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
                             // Handle failure
                             System.out.println("API call failed. Status code: " + statusCode);
 //                            e.printStackTrace();
-                            future.completeExceptionally(e);
+                            future.completeExceptionally(null);
                             incrementFailCounter();
                         }
 
                         @Override
                         public void onSuccess(Void result, int statusCode, Map<String, List<String>> responseHeaders) {
                             //                        System.out.println("API call successful. Status code: " + statusCode);
-                            future.complete(null);
+                            future.complete(new ApiResponse<Void>(statusCode, responseHeaders, result));
                             incrementSuccessCounter();
                             writeToFile(startTime, "POST", System.currentTimeMillis()-startTime, statusCode);
                         }
@@ -85,11 +86,15 @@ public class Client2Runnable implements Runnable {
 
                         }
                     });
-                    future.get();
-                    break;
+                    ApiResponse<Void> response = future.get();  // This will block until the CompletableFuture is completed
+                    // Check if the response indicates success; if yes, break the loop
+                    if (response.getStatusCode() == 200) {
+                        break;
+                    }else{
+                        retryCount++;
+                    }
                 } catch (ApiException | ExecutionException | InterruptedException e) {
                     retryCount++;
-                    throw new RuntimeException(e);
                 }
             }
         }
