@@ -52,7 +52,7 @@ public class SocketClientThread extends Thread {
                 out.println("ClientThread" + clientID + ": ClientMessage" + i);
                 System.out.println(in.readLine());
 //                System.out.println("get server response");
-
+                s.close();
             } catch (UnknownHostException e) {
                 System.err.println("Don't know about host " + hostName);
                 break;

@@ -24,7 +24,7 @@ public class SocketClientMultithreaded {
     
     public static void main(String[] args) throws BrokenBarrierException, InterruptedException {
         String hostName;
-        final int MAX_THREADS = 20;
+        final int MAX_THREADS = 50;
         int port;
         
         if (args.length == 2) {
