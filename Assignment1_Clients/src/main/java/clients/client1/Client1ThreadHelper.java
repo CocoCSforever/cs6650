@@ -5,38 +5,56 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Client1ThreadHelper {
-//    public static final ExecutorService executor = Executors.newFixedThreadPool(32);
+    public static final ExecutorService executor = Executors.newFixedThreadPool(32);
     public static void client1StartNThreads(int n, int requestPerThread) {
-        Client1ProducerConsumer producerConsumer = new Client1ProducerConsumer(n, requestPerThread);
         CountDownLatch latch = new CountDownLatch(n);
+        Client1Runnable.latch = latch;
+        Client1ProducerConsumer producerConsumer = new Client1ProducerConsumer(n, requestPerThread, latch);
+
 
         // Start the producer threads (example with a simple task)
         for (int i = 0; i < 32; i++) {
 //            final int threadNumber = i;
-            Thread producerThread = new Thread(() -> {
+//            Thread producerThread = new Thread(() -> {
+//                try {
+//                    producerConsumer.produce();
+////                    latch.countDown();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            });
+//            producerThread.start();
+            executor.submit(() -> {
                 try {
                     producerConsumer.produce();
-                    latch.countDown();
+//                    latch.countDown();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             });
-            producerThread.start();
+            executor.submit(() -> {
+                try {
+                    producerConsumer.consume();
+//                    latch.countDown();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
         }
 
         // Start the consumer thread
-        Thread consumerThread = new Thread(() -> {
-            try {
-                producerConsumer.consume();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-        consumerThread.start();
+//        Thread consumerThread = new Thread(() -> {
+//            try {
+//                producerConsumer.consume();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        consumerThread.start();
 
         try {
             latch.await();
-            consumerThread.join();
+//            consumerThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
