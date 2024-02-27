@@ -12,7 +12,7 @@ public class Client2_Multi_Threads {
         client2StartNThreads(32, 5250, "output.csv");
         long time = System.currentTimeMillis()-startTime;
 //        System.out.println(Thread.currentThread() + ":" + System.currentTimeMillis());
-
+        Client2ThreadHelper.executorService.shutdown();
         System.out.println("1. number of successful requests sent: " + Client2Runnable.getSuccessCounter());
         System.out.println("2. number of unsuccessful requests (should be 0): " + Client2Runnable.getFailCounter());
         System.out.println("3. total run time (wall time) for all phases to complete: " + time);

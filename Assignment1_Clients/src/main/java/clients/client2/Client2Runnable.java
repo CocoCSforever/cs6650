@@ -58,22 +58,23 @@ public class Client2Runnable implements Runnable {
                 try {
                     long startTime = System.currentTimeMillis();
                     CompletableFuture<ApiResponse<Void>> future = new CompletableFuture<>();
+//                    System.out.println("running: " + name + " Success: "+ getSuccessCounter()) ;
                     api.writeNewLiftRideAsync(body, resortID, seasonID, dayID, skierID, new ApiCallback<Void>() {
                         @Override
                         public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
                             // Handle failure
-                            System.out.println("API call failed. Status code: " + statusCode);
-//                            e.printStackTrace();
-                            future.completeExceptionally(null);
+//                            System.out.println("API call failed. Status code: " + statusCode);
+                            e.printStackTrace();
+                            future.completeExceptionally(e);
                             incrementFailCounter();
                         }
 
                         @Override
                         public void onSuccess(Void result, int statusCode, Map<String, List<String>> responseHeaders) {
-                            //                        System.out.println("API call successful. Status code: " + statusCode);
+//                            System.out.println("API call successful. Status code: " + statusCode);
                             future.complete(new ApiResponse<Void>(statusCode, responseHeaders, result));
                             incrementSuccessCounter();
-                            writeToFile(startTime, "POST", System.currentTimeMillis()-startTime, statusCode);
+//                            writeToFile(startTime, "POST", System.currentTimeMillis()-startTime, statusCode);
                         }
 
                         @Override
@@ -88,7 +89,7 @@ public class Client2Runnable implements Runnable {
                     });
                     ApiResponse<Void> response = future.get();  // This will block until the CompletableFuture is completed
                     // Check if the response indicates success; if yes, break the loop
-                    if (response.getStatusCode() == 200) {
+                    if (response.getStatusCode() == 201) {
                         break;
                     }else{
                         retryCount++;

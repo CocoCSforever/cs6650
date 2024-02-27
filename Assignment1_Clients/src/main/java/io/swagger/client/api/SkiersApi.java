@@ -135,11 +135,6 @@ public class SkiersApi {
         
         com.squareup.okhttp.Call call = getSkierDayVerticalCall(resortID, seasonID, dayID, skierID, progressListener, progressRequestListener);
         return call;
-
-        
-        
-        
-        
     }
 
     /**
@@ -279,11 +274,6 @@ public class SkiersApi {
         
         com.squareup.okhttp.Call call = getSkierResortTotalsCall(skierID, resort, season, progressListener, progressRequestListener);
         return call;
-
-        
-        
-        
-        
     }
 
     /**
