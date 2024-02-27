@@ -7,7 +7,10 @@ import io.swagger.client.ApiResponse;
 import io.swagger.client.api.SkiersApi;
 import io.swagger.client.model.LiftRide;
 import com.squareup.okhttp.OkHttpClient;
+import io.swagger.client.model.LiftRideInfo;
+
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -22,12 +25,14 @@ public class Client1Runnable implements Runnable {
     private String name;
     private SkiersApi api;
     private int requestPerThread;
+    private ArrayList<LiftRideInfo> requests;
 
 
     // default constructor
     public Client1Runnable(int requestPerThread) {
         this.api = new SkiersApi(new ApiClient());
         this.requestPerThread = requestPerThread;
+        this.requests = new ArrayList<>();
     }
 
     public Client1Runnable(String threadName, CountDownLatch latch, int requestPerThread) {
@@ -48,30 +53,34 @@ public class Client1Runnable implements Runnable {
     @Override
     public void run() {
         System.out.println("running client with Success: " + getSuccessCounter());
-        Random r = new Random();
-        for(int i = 0; i < requestPerThread; i++) {
-            api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war/");
-    //            api.getApiClient().setBasePath("http://184.73.133.33:8080/Assignment1_yijia/");
-            LiftRide body = new LiftRide(r.nextInt(360) + 1, r.nextInt(40) + 1);
-            Integer resortID = r.nextInt(10) + 1;
-            String seasonID = "2024";
-            String dayID = "1";
-            Integer skierID = r.nextInt(10000) + 1;
-
-            makeAsyncApiCall(body, resortID, seasonID, dayID, skierID);
+//        Random r = new Random();
+        api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war/");
+//        for(int i = 0; i < requestPerThread; i++) {
+//                api.getApiClient().setBasePath("http://184.73.133.33:8080/Assignment1_yijia/");
+//            LiftRide body = new LiftRide(r.nextInt(360) + 1, r.nextInt(40) + 1);
+//            Integer resortID = r.nextInt(10) + 1;
+//            String seasonID = "2024";
+//            String dayID = "1";
+//            Integer skierID = r.nextInt(10000) + 1;
+//
+//            makeAsyncApiCall(requests.get(i));
+//        }
+        for(LiftRideInfo request: requests){
+            makeAsyncApiCall(request);
         }
         System.out.println("exiting client with Success: " + getSuccessCounter());
         latch.countDown();
     }
 
-    public void makeAsyncApiCall(LiftRide body, Integer resortID, String seasonID, String dayID, Integer skierID) {
+    public void makeAsyncApiCall(LiftRideInfo request) {
+//        LiftRide body, Integer resortID, String seasonID, String dayID, Integer skierID
         int retryCount = 0;
         while (retryCount < maxRetries) {
             try {
                 long startTime = System.currentTimeMillis();
                 CompletableFuture<ApiResponse<Void>> future = new CompletableFuture<>();
 //                    System.out.println("running: " + name + " Success: "+ getSuccessCounter()) ;
-                api.writeNewLiftRideAsync(body, resortID, seasonID, dayID, skierID, new ApiCallback<Void>() {
+                api.writeNewLiftRideAsync(request.getBody(), request.getResortID(), request.getSeasonID(), request.getDayID(), request.getSkierID(), new ApiCallback<Void>() {
                     @Override
                     public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
                         // Handle failure
@@ -111,6 +120,10 @@ public class Client1Runnable implements Runnable {
                 retryCount++;
             }
         }
+    }
+
+    public synchronized void addToRequests(LiftRideInfo liftRideInfo){
+        requests.add(liftRideInfo);
     }
 
     // Synchronize access to the success counter
