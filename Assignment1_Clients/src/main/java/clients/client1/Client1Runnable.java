@@ -20,7 +20,7 @@ public class Client1Runnable implements Runnable {
     private static int successCounter = 0;
     private static int failCounter = 0;
     private static final int maxRetries = 5;
-    public static CountDownLatch latch;
+    private static CountDownLatch latch;
 //    public static final ExecutorService executor = Executors.newFixedThreadPool(16);
     private String name;
     private SkiersApi api;
@@ -53,18 +53,7 @@ public class Client1Runnable implements Runnable {
     @Override
     public void run() {
         System.out.println("running client with Success: " + getSuccessCounter());
-//        Random r = new Random();
         api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war/");
-//        for(int i = 0; i < requestPerThread; i++) {
-//                api.getApiClient().setBasePath("http://184.73.133.33:8080/Assignment1_yijia/");
-//            LiftRide body = new LiftRide(r.nextInt(360) + 1, r.nextInt(40) + 1);
-//            Integer resortID = r.nextInt(10) + 1;
-//            String seasonID = "2024";
-//            String dayID = "1";
-//            Integer skierID = r.nextInt(10000) + 1;
-//
-//            makeAsyncApiCall(requests.get(i));
-//        }
         for(LiftRideInfo request: requests){
             makeAsyncApiCall(request);
         }
@@ -95,7 +84,6 @@ public class Client1Runnable implements Runnable {
                         System.out.println("API call successful. Status code: " + statusCode);
                         future.complete(new ApiResponse<Void>(statusCode, responseHeaders, result));
                         incrementSuccessCounter();
-//                            writeToFile(startTime, "POST", System.currentTimeMillis()-startTime, statusCode);
                     }
 
                     @Override
@@ -124,6 +112,14 @@ public class Client1Runnable implements Runnable {
 
     public synchronized void addToRequests(LiftRideInfo liftRideInfo){
         requests.add(liftRideInfo);
+    }
+
+    public static CountDownLatch getLatch() {
+        return latch;
+    }
+
+    public static void setLatch(CountDownLatch latch) {
+        Client1Runnable.latch = latch;
     }
 
     // Synchronize access to the success counter

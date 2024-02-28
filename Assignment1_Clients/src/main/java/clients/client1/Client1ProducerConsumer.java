@@ -15,15 +15,13 @@ import java.util.concurrent.*;
 public class Client1ProducerConsumer {
     private static final ExecutorService executor = Executors.newFixedThreadPool(32);
     private static final BlockingQueue<Runnable> taskQueue = new LinkedBlockingQueue<>();
-//    private static CountDownLatch latch;
     private static int capacity;
     private static int requestsPerThread;
 
 
-    public Client1ProducerConsumer(int capacity, int requestsPerThread, CountDownLatch latch) {
+    public Client1ProducerConsumer(int capacity, int requestsPerThread) {
         this.capacity = capacity;
         this.requestsPerThread = requestsPerThread;
-//        this.latch = latch;
     }
 
     public void produce() throws InterruptedException
@@ -33,6 +31,7 @@ public class Client1ProducerConsumer {
         for(int i = 0; i < requestsPerThread; i++){
             client.addToRequests(new LiftRideInfo(r));
         }
+
         synchronized (this)
         {
             // producer thread waits while list
@@ -70,9 +69,6 @@ public class Client1ProducerConsumer {
 
             // Wake up producer thread
             notify();
-
-            // and sleep
-//                Thread.sleep(1000);
         }
     }
 }
