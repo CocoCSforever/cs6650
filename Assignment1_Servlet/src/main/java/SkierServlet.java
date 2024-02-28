@@ -6,7 +6,7 @@ import java.io.IOException;
 import com.google.gson.Gson;
 import db.LiftRide;
 
-//@WebServlet(name = "SkierServlet", value = "/SkierServlet")
+@WebServlet(name = "SkierServlet", value = "/SkierServlet")
 public class SkierServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
