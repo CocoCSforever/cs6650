@@ -41,11 +41,15 @@ public class SkierServlet extends HttpServlet {
         }
     }
 
-    private boolean isUrlValid(String[] urlPath) {
+    private boolean isUrlValid(String[] urlParts) {
         // TODO: validate the request url path according to the API spec
         // urlPath  = "/1/seasons/2019/day/1/skier/123"
         // urlParts = [, 1, seasons, 2019, day, 1, skier, 123]
-        return true;
+        if (urlParts.length == 8 && urlParts[2].equals("seasons") && urlParts[4].equals("days")
+                && urlParts[6].equals("skiers")){
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -57,49 +61,49 @@ public class SkierServlet extends HttpServlet {
         // check we have a URL!
         if (urlPath == null || urlPath.isEmpty()) {
             res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            res.getWriter().write("missing paramterers");
+            res.getWriter().write("missing parameters");
             return;
         }
 
-        // validate url path/check input value and return the response status code
         // /{resortID}/seasons/{seasonID}/days/{dayID}/skiers/{skierID}
         String[] urlParts = urlPath.split("/");
-        if (urlParts.length == 8 && urlParts[2].equals("seasons") && urlParts[4].equals("days")
-                && urlParts[6].equals("skiers")) {
-            try {
-                // Extract values from the path
-                String skierID = urlParts[7];
-                String resortID = urlParts[1];
-                String seasonID = urlParts[3];
-                String dayID = urlParts[5];
 
-                // Extract values from req.body
-                StringBuilder sb = new StringBuilder();
-                String s;
-                while ((s = req.getReader().readLine()) != null) {
-                    sb.append(s);
-                }
+        // validate url path/check input value and return the response status code
+        if(!isUrlValid(urlParts)){
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            res.getWriter().write("Invalid URL Path parameters: " + urlPath);
+            return;
+        }
 
-                // Parse JSON data into LiftRide object
-                Gson gson = new Gson();
-                LiftRide liftRide = gson.fromJson(sb.toString(), LiftRide.class);
-                // Set additional parameters from the path
-                liftRide.setSkierID(skierID);
-                liftRide.setResortID(resortID);
-                liftRide.setSeasonID(seasonID);
-                liftRide.setDayID(dayID);
+        try {
+            // Extract values from the path
+            String skierID = urlParts[7];
+            String resortID = urlParts[1];
+            String seasonID = urlParts[3];
+            String dayID = urlParts[5];
+
+            // Extract values from req.body
+            StringBuilder sb = new StringBuilder();
+            String s;
+            while ((s = req.getReader().readLine()) != null) {
+                sb.append(s);
+            }
+
+            // Parse JSON data into LiftRide object
+            Gson gson = new Gson();
+            LiftRide liftRide = gson.fromJson(sb.toString(), LiftRide.class);
+            // Set additional parameters from the path
+            liftRide.setSkierID(skierID.trim());  // as the last param, it as trailing /n
+            liftRide.setResortID(resortID);
+            liftRide.setSeasonID(seasonID);
+            liftRide.setDayID(dayID);
 
 //                System.out.println("Received data: " + liftRide);
-                res.setStatus(HttpServletResponse.SC_CREATED);
-                res.getWriter().write(liftRide.toString());
-            }catch (Exception e) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid URL path parameters");
-                res.getWriter().write("invalid");
-            }
-        }else{
-            res.setStatus(HttpServletResponse.SC_BAD_REQUEST, ""+urlParts.length+urlPath);
-            res.getWriter().write(""+urlParts.length+urlPath);
+            res.setStatus(HttpServletResponse.SC_CREATED);
+            res.getWriter().write(liftRide.toString());
+        }catch (Exception e) {
+            res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad URL path parameters: " + urlPath + e.getMessage());
+            e.printStackTrace();
         }
-//        System.out.println("3. total run time (wall time) for all phases to complete: " + (System.currentTimeMillis()-startTime));
     }
 }
