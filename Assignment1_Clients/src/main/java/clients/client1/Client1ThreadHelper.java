@@ -5,16 +5,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Client1ThreadHelper {
-    public static final ExecutorService executor = Executors.newFixedThreadPool(32);
-    public static long client1StartNThreads(int n, int requestPerThread) {
-        Client1ProducerConsumer producerConsumer = new Client1ProducerConsumer(n, requestPerThread);
+    public static final int SINGLE_THREAD = 1;
+    public static final ExecutorService executor = Executors.newFixedThreadPool(SINGLE_THREAD);
+    public static long client1StartNThreads(int nOfThreads, int requestPerThread) {
+        // Create a producerConsumer instance
+        Client1ProducerConsumer producerConsumer = new Client1ProducerConsumer(nOfThreads, requestPerThread);
+        // Use a single dedicated thread to generate all liftRide Information
+        generateLiftRideData(producerConsumer, new CountDownLatch(SINGLE_THREAD));
+        Client1Runnable.setLatch(new CountDownLatch(nOfThreads));
 
-        generateLiftRideData(producerConsumer, new CountDownLatch(n));
-        Client1Runnable.setLatch(new CountDownLatch(n));
+        // start to send client requests
         long startTime = System.currentTimeMillis();
-        sendClientRequest(producerConsumer);
+        sendClientRequest(nOfThreads, producerConsumer);
 
-//        executor.shutdown();
         try {
             Client1Runnable.getLatch().await();
         } catch (InterruptedException e) {
@@ -26,17 +29,14 @@ public class Client1ThreadHelper {
     }
 
     public static void generateLiftRideData(Client1ProducerConsumer producerConsumer, CountDownLatch latch){
-        // Start the producer threads (example with a simple task)
-        for (int i = 0; i < 32; i++) {
-            executor.submit(() -> {
-                try {
-                    producerConsumer.produce();
-                    latch.countDown();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-        }
+        executor.submit(() -> {
+            try {
+                producerConsumer.produce();
+                latch.countDown();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
 
         // wait until producer generated all liftRideInfo
         try {
@@ -45,9 +45,10 @@ public class Client1ThreadHelper {
             e.printStackTrace();
         }
     }
+    
 
-    public static void sendClientRequest(Client1ProducerConsumer producerConsumer){
-        for (int i = 0; i < 32; i++) {
+    public static void sendClientRequest(int nOfThreads, Client1ProducerConsumer producerConsumer){
+//        for (int i = 0; i < nOfThreads; i++) {
             executor.submit(() -> {
                 try {
                     producerConsumer.consume();
@@ -55,7 +56,7 @@ public class Client1ThreadHelper {
                     e.printStackTrace();
                 }
             });
-        }
+//        }
     }
 }
 

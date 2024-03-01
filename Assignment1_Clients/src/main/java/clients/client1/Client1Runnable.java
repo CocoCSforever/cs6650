@@ -35,29 +35,14 @@ public class Client1Runnable implements Runnable {
         this.requests = new ArrayList<>();
     }
 
-    public Client1Runnable(String threadName, CountDownLatch latch, int requestPerThread) {
-//        System.out.println("Constructor called: " + threadName) ;
-        this.name = threadName ;
-        this.latch = latch;
-        ApiClient apiClient = new ApiClient();
-        OkHttpClient okHttpClient = apiClient.getHttpClient();
-        okHttpClient.setConnectTimeout(5000, java.util.concurrent.TimeUnit.MILLISECONDS);
-        this.api = new SkiersApi(new ApiClient());
-        this.requestPerThread = requestPerThread;
-    }
-
-    public void setName (String threadName) {
-        name = threadName;
-    }
-
     @Override
     public void run() {
-        System.out.println("running client with Success: " + getSuccessCounter());
+//        System.out.println("running client with Success: " + getSuccessCounter());
         api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war/");
         for(LiftRideInfo request: requests){
             makeAsyncApiCall(request);
         }
-        System.out.println("exiting client with Success: " + getSuccessCounter());
+//        System.out.println("exiting client with total Success count: " + getSuccessCounter());
         latch.countDown();
     }
 
@@ -66,9 +51,7 @@ public class Client1Runnable implements Runnable {
         int retryCount = 0;
         while (retryCount < maxRetries) {
             try {
-                long startTime = System.currentTimeMillis();
                 CompletableFuture<ApiResponse<Void>> future = new CompletableFuture<>();
-//                    System.out.println("running: " + name + " Success: "+ getSuccessCounter()) ;
                 api.writeNewLiftRideAsync(request.getBody(), request.getResortID(), request.getSeasonID(), request.getDayID(), request.getSkierID(), new ApiCallback<Void>() {
                     @Override
                     public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
@@ -81,7 +64,11 @@ public class Client1Runnable implements Runnable {
 
                     @Override
                     public void onSuccess(Void result, int statusCode, Map<String, List<String>> responseHeaders) {
-                        System.out.println("API call successful. Status code: " + statusCode);
+                        if(statusCode >= 400){
+                            onFailure(new ApiException("Server responded with error code"), statusCode, responseHeaders);
+                            return;
+                        }
+//                        System.out.println("API call successful. Status code: " + statusCode);
                         future.complete(new ApiResponse<Void>(statusCode, responseHeaders, result));
                         incrementSuccessCounter();
                     }
@@ -112,6 +99,10 @@ public class Client1Runnable implements Runnable {
 
     public synchronized void addToRequests(LiftRideInfo liftRideInfo){
         requests.add(liftRideInfo);
+    }
+
+    public void setName (String threadName) {
+        name = threadName;
     }
 
     public static CountDownLatch getLatch() {
