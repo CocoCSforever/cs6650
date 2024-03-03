@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Client2ProducerConsumer {
-    public static final ExecutorService executor = Executors.newFixedThreadPool(60);
+    public static final ExecutorService executor = Executors.newFixedThreadPool(32);
     private static final BlockingQueue<Runnable> taskQueue = new LinkedBlockingQueue<>();
     private static int nOfThreads;
     private static int requestsPerThread;

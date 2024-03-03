@@ -14,7 +14,7 @@ public class Client2_Multi_Threads {
             bf.write("Start Time,Request Type,Latency,Response Code\n");
 
             long wallTime1 = Client2ThreadHelper.client2StartNThreads(32, 1000, bf);
-            long wallTime2 = Client2ThreadHelper.client2StartNThreads(60, 2800, bf);
+            long wallTime2 = Client2ThreadHelper.client2StartNThreads(32, 5250, bf);
             long time = wallTime1 + wallTime2;
 
             Client2ThreadHelper.executor.shutdown();

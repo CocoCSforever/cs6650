@@ -13,7 +13,7 @@
 package io.swagger.client.api;
 
 import clients.client1.Client1Runnable;
-import clients.clientdraft.Client2Runnable;
+import clients.client2.Client2Runnable;
 import io.swagger.client.model.SkierVertical;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -26,7 +26,6 @@ import java.util.*;
 
 import static clients.client1.Client1ThreadHelper.client1StartNThreads;
 import static clients.client2.Client2ThreadHelper.client2StartNThreads;
-import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -99,7 +98,7 @@ public class SkiersApiTest {
             bf.write("Start Time,Request Type,Latency,Response Code\n");
             long wallTime =client2StartNThreads(1, 10000, bf);
             System.out.println("total run time (wall time) for 10000 request/thread to complete: " + 1.0*wallTime/1000 + " seconds");
-            System.out.println("run time (wall time) per request: " + 1.0*wallTime/ Client2Runnable.getSuccessCounter() + " milliseconds per request");
+            System.out.println("run time (wall time) per request: " + 1.0*wallTime/Client2Runnable.getSuccessCounter() + " milliseconds per request");
         } catch(IOException e) {
             e.printStackTrace();
         }
