@@ -13,12 +13,15 @@
 package io.swagger.client.api;
 
 import clients.client1.Client1Runnable;
-import clients.client2.Client2Runnable;
+import clients.clientdraft.Client2Runnable;
 import io.swagger.client.model.SkierVertical;
 import org.junit.Test;
 import org.junit.Ignore;
 
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 import static clients.client1.Client1ThreadHelper.client1StartNThreads;
@@ -84,15 +87,21 @@ public class SkiersApiTest {
 
     @Test
     public void client1SingleRequestTimeTest() throws Exception {
-        long startTime = System.currentTimeMillis();
-        client1StartNThreads(1, 10000);
-        System.out.println("total run time (wall time) for 10000 request/thread to complete: " + 1.0*(System.currentTimeMillis()-startTime)/ Client1Runnable.getSuccessCounter());
+        long wallTime = client1StartNThreads(1, 10000);
+        System.out.println("total run time (wall time) for 10000 request/thread to complete: " + 1.0*wallTime/1000 + " seconds");
+        System.out.println("run time (wall time) per request: " + 1.0*wallTime/ Client1Runnable.getSuccessCounter() + " milliseconds per request");
     }
 
     @Test
     public void client2SingleRequestTimeTest() throws Exception {
-        long startTime = System.currentTimeMillis();
-        client2StartNThreads(20, 10000, "test.csv");
-        System.out.println("total run time (wall time) for 10000 request/thread to complete: " + 1.0*(System.currentTimeMillis()-startTime)/ Client2Runnable.getSuccessCounter());
+        try(BufferedWriter bf = new BufferedWriter(new FileWriter("test.csv"))) {
+            clients.client2.Client2Runnable.setBf(bf);
+            bf.write("Start Time,Request Type,Latency,Response Code\n");
+            long wallTime =client2StartNThreads(1, 10000, bf);
+            System.out.println("total run time (wall time) for 10000 request/thread to complete: " + 1.0*wallTime/1000 + " seconds");
+            System.out.println("run time (wall time) per request: " + 1.0*wallTime/ Client2Runnable.getSuccessCounter() + " milliseconds per request");
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -5,7 +5,7 @@ public class Client1_Multi_Threads {
     {
         //Display info about the main thread and terminate
         long wallTime1 = Client1ThreadHelper.client1StartNThreads(32, 1000);
-        long wallTime2 =Client1ThreadHelper.client1StartNThreads(32, 5250);
+        long wallTime2 =Client1ThreadHelper.client1StartNThreads(80, 2100);
         long time = wallTime1 + wallTime2;
 
         Client1ThreadHelper.executor.shutdown();

@@ -5,109 +5,134 @@ import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
 import io.swagger.client.ApiResponse;
 import io.swagger.client.api.SkiersApi;
-import io.swagger.client.model.LiftRide;
+import io.swagger.client.model.LiftRideInfo;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 
 public class Client2Runnable implements Runnable {
+    public static final ExecutorService executor = Executors.newFixedThreadPool(1);
     private static int successCounter = 0;
     private static int failCounter = 0;
+    private static final int maxRetries = 5;
     private static BufferedWriter bf;
+    private static CountDownLatch latch;
     private String name;
-    private CountDownLatch latch;
     private SkiersApi api;
     private int requestPerThread;
+    private ArrayList<LiftRideInfo> requests;
 
-    // default constructor
-    public Client2Runnable() {}
-
-    public Client2Runnable(String threadName, CountDownLatch latch, int requestPerThread, BufferedWriter bf) {
-//        System.out.println("Constructor called: " + threadName) ;
-        this.name = threadName ;
-        this.latch = latch;
+    public Client2Runnable(int requestPerThread) {
         this.api = new SkiersApi(new ApiClient());
         this.requestPerThread = requestPerThread;
-        this.bf = bf;
+        this.requests = new ArrayList<>();
+    }
+
+    @Override
+    public void run() {
+//        System.out.println("running client with Success: " + getSuccessCounter());
+        api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war/");
+//        api.getApiClient().setBasePath("http://54.82.80.17:8080/Assignment1_yijia/");
+        for(LiftRideInfo request: requests){
+            makeAsyncApiCall(request);
+        }
+//        System.out.println("exiting client with total Success count: " + getSuccessCounter());
+        latch.countDown();
+    }
+
+    public void makeAsyncApiCall(LiftRideInfo request) {
+//        LiftRide body, Integer resortID, String seasonID, String dayID, Integer skierID
+        int retryCount = 0;
+        long startTime = System.currentTimeMillis();
+        while (retryCount < maxRetries) {
+            try {
+                CompletableFuture<ApiResponse<Void>> future = new CompletableFuture<>();
+                api.writeNewLiftRideAsync(request.getBody(), request.getResortID(), request.getSeasonID(), request.getDayID(), request.getSkierID(), new ApiCallback<Void>() {
+                    @Override
+                    public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                        // Handle failure
+//                            System.out.println("API call failed. Status code: " + statusCode);
+                        e.printStackTrace();
+                        future.completeExceptionally(e);
+                        incrementFailCounter();
+                    }
+
+                    @Override
+                    public void onSuccess(Void result, int statusCode, Map<String, List<String>> responseHeaders) {
+                        if(statusCode >= 400){
+                            onFailure(new ApiException("Server responded with error code"), statusCode, responseHeaders);
+                            return;
+                        }
+                        long wallTime = System.currentTimeMillis()-startTime;
+//                        System.out.println("API call successful. Status code: " + statusCode);
+                        future.complete(new ApiResponse<Void>(statusCode, responseHeaders, result));
+                        incrementSuccessCounter();
+                        writeToFile(startTime, "POST", wallTime, statusCode);
+                    }
+
+                    @Override
+                    public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+
+                    }
+
+                    @Override
+                    public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+
+                    }
+                });
+                // This will block until the CompletableFuture is completed
+                ApiResponse<Void> response = future.get();
+                // Check if the response indicates success; if yes, break the loop
+                if (response.getStatusCode() == 201) {
+//                    long wallTime = System.currentTimeMillis()-startTime;
+//                    writeToFile(startTime, "POST", wallTime, response.getStatusCode());
+                    break;
+                }else{
+                    retryCount++;
+                }
+            } catch (ApiException | ExecutionException | InterruptedException e) {
+                retryCount++;
+            }
+        }
+
+    }
+
+    public synchronized void writeToFile(long startTime, String requestType, long latency, int responseCode) {
+        executor.submit(() -> {
+            try {
+                bf.write(String.format("%d, %s, %d, %d\n", startTime, requestType, latency, responseCode));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public synchronized void addToRequests(LiftRideInfo liftRideInfo){
+        requests.add(liftRideInfo);
     }
 
     public void setName (String threadName) {
         name = threadName;
     }
 
-    public void run() {
-        Random r = new Random();
-        for (int i = 0; i < requestPerThread; i++) {
-            api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war/");
-            LiftRide body = new LiftRide(r.nextInt(360) + 1, r.nextInt(40) + 1);
-            Integer resortID = r.nextInt(10) + 1;
-            String seasonID = "2024";
-            String dayID = "1";
-            Integer skierID = r.nextInt(10000) + 1;
-
-            int maxRetries = 5;
-            int retryCount = 0;
-
-            while (retryCount < maxRetries) {
-                try {
-                    long startTime = System.currentTimeMillis();
-                    CompletableFuture<ApiResponse<Void>> future = new CompletableFuture<>();
-//                    System.out.println("running: " + name + " Success: "+ getSuccessCounter()) ;
-                    api.writeNewLiftRideAsync(body, resortID, seasonID, dayID, skierID, new ApiCallback<Void>() {
-                        @Override
-                        public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
-                            // Handle failure
-//                            System.out.println("API call failed. Status code: " + statusCode);
-                            e.printStackTrace();
-                            future.completeExceptionally(e);
-                            incrementFailCounter();
-                        }
-
-                        @Override
-                        public void onSuccess(Void result, int statusCode, Map<String, List<String>> responseHeaders) {
-//                            System.out.println("API call successful. Status code: " + statusCode);
-                            future.complete(new ApiResponse<Void>(statusCode, responseHeaders, result));
-                            incrementSuccessCounter();
-//                            writeToFile(startTime, "POST", System.currentTimeMillis()-startTime, statusCode);
-                        }
-
-                        @Override
-                        public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
-
-                        }
-
-                        @Override
-                        public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
-
-                        }
-                    });
-                    ApiResponse<Void> response = future.get();  // This will block until the CompletableFuture is completed
-                    // Check if the response indicates success; if yes, break the loop
-                    if (response.getStatusCode() == 201) {
-                        break;
-                    }else{
-                        retryCount++;
-                    }
-                } catch (ApiException | ExecutionException | InterruptedException e) {
-                    retryCount++;
-                }
-            }
-        }
-        latch.countDown();
+    public static BufferedWriter getBf() {
+        return bf;
     }
 
-    public synchronized void writeToFile(long startTime, String requestType, long latency, int responseCode) {
-        try {
-            bf.write(String.format("%d, %s, %d, %d\n", startTime, requestType, latency, responseCode));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void setBf(BufferedWriter bf) {
+        Client2Runnable.bf = bf;
+    }
+
+    public static CountDownLatch getLatch() {
+        return latch;
+    }
+
+    public static void setLatch(CountDownLatch latch) {
+        Client2Runnable.latch = latch;
     }
 
     // Synchronize access to the success counter
@@ -128,4 +153,5 @@ public class Client2Runnable implements Runnable {
     public static synchronized int getFailCounter() {
         return failCounter;
     }
+
 }
