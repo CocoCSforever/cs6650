@@ -1,0 +1,4 @@
+db/LiftRide.class
+SkierServlet.class
+RMQ/RMQChannelFactory.class
+RMQ/RMQChannelPool.class
