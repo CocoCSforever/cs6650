@@ -20,7 +20,7 @@ public class LiftRide {
         this.dayID = Integer.parseInt(dayID);
         this.time = Integer.parseInt(time);
         liftRides.add(this);
-        System.out.println(this);
+//        System.out.println(this);
     }
 
     public static List<LiftRide> getLiftRides() {

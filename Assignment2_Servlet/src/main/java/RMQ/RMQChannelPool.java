@@ -47,7 +47,6 @@ public class RMQChannelPool {
   }
 
   public Channel borrowObject() throws IOException {
-
     try {
       return pool.take();
     } catch (InterruptedException e) {
