@@ -28,7 +28,7 @@ public class Send {
         factory.setHost("localhost");
         
         final Connection conn = factory.newConnection();
-        Runnable runnable = new Runnable() {
+        Runnable runnable = new Runnable(){
             @Override
             public void run() {
                 try {

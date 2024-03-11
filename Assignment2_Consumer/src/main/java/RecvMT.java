@@ -9,12 +9,21 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.ConcurrentHashMap;
+import com.google.gson.Gson;
 
 public class RecvMT {
 
-    private final static String QUEUE_NAME = "threadExQ";
+    private final static String QUEUE_NAME = "yjQueue";
+    private final static int NUM_THREADS = 40;
+    private final static ExecutorService threadPool = Executors.newFixedThreadPool(NUM_THREADS);
+    private static ConcurrentHashMap<Integer, List<LiftRide>> concurrentMap = new ConcurrentHashMap<>();
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
@@ -26,15 +35,20 @@ public class RecvMT {
             public void run() {                 
                 try {
                     final Channel channel = connection.createChannel();
-                    channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+                    Gson gson = new Gson();
+                    channel.queueDeclare(QUEUE_NAME, false, false, false, null);
                     // max one message per receiver
                     channel.basicQos(1);
                     System.out.println(" [*] Thread waiting for messages. To exit press CTRL+C");
 
                     DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                         String message = new String(delivery.getBody(), "UTF-8");
+//                        System.out.println(message);
+                        LiftRide liftRide = gson.fromJson(message, LiftRide.class);
+                        System.out.println(liftRide);
+                        addLiftRideToMap(liftRide);
                         channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-                        System.out.println( "Callback thread ID = " + Thread.currentThread().getId() + " Received '" + message + "'");
+//                        System.out.println( "Callback thread ID = " + Thread.currentThread().getId() + " Received '" + message + "'");
                     };
                     // process messages
                     channel.basicConsume(QUEUE_NAME, false, deliverCallback, consumerTag -> { });
@@ -43,10 +57,18 @@ public class RecvMT {
                 }
             }
         };
-        // start threads and block to receive messages
-        Thread recv1 = new Thread(runnable);
-        Thread recv2 = new Thread(runnable);
-        recv1.start();
-        recv2.start();
+
+        for(int i = 0; i < NUM_THREADS; i++){
+            threadPool.submit(runnable);
+        }
+    }
+
+    public static void addLiftRideToMap(LiftRide liftRide){
+        int skierId = liftRide.getSkierID();
+        if(!concurrentMap.containsKey(skierId)){
+            concurrentMap.put(skierId, new ArrayList<>());
+        }
+        concurrentMap.get(skierId).add(liftRide);
+        System.out.println( "Callback thread ID = " + Thread.currentThread().getId() + " Received '" + skierId + "'" + concurrentMap.get(skierId).size());
     }
 }
