@@ -38,8 +38,8 @@ public class Client1Runnable implements Runnable {
     @Override
     public void run() {
 //        System.out.println("running client with Success: " + getSuccessCounter());
-        api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war/");
-//        api.getApiClient().setBasePath("http://54.82.80.17:8080/Assignment1_yijia/");
+//        api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war/");
+        api.getApiClient().setBasePath("http://lb-1600645194.us-west-2.elb.amazonaws.com/Assignment2_yijia/");
         for(LiftRideInfo request: requests){
             makeAsyncApiCall(request);
         }
