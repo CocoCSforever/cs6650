@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.concurrent.*;
 
 public class Client1ProducerConsumer {
-    public static final ExecutorService executor = Executors.newFixedThreadPool(150);
+    public static final ExecutorService executor = Executors.newFixedThreadPool(80);
     private static final BlockingQueue<Runnable> taskQueue = new LinkedBlockingQueue<>();
     private static int nOfThreads;
     private static int requestsPerThread;

@@ -19,7 +19,7 @@ public class LiftRide {
         this.seasonID = Integer.parseInt(seasonID);
         this.dayID = Integer.parseInt(dayID);
         this.time = Integer.parseInt(time);
-        liftRides.add(this);
+//        liftRides.add(this);
 //        System.out.println(this);
     }
 

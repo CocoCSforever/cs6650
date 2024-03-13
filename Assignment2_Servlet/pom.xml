@@ -57,7 +57,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>Assignment2_yijia</finalName>
+    <finalName>Assignment2_Servlet</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

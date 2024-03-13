@@ -1,3 +1,4 @@
+import com.google.gson.Gson;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import db.LiftRide;
@@ -49,13 +50,14 @@ public class SkierServletTest extends TestCase {
 
         System.out.println("INFO: RabbitMQ connection established");
         SkierServlet sk = new SkierServlet();
+        Gson gson = new Gson();
 
 
         // run ApachePoolTest and calculate the duration it takes
         long start = System.nanoTime();
         for(int t = 0; t < NUM_THREADS; t++){
             for(int i = 0; i < NUM_ITERATIONS; i++){
-                SkierServlet.sendMessageToBroker(new LiftRide("11", "22", "33", "44", "55", "66").toString());
+                SkierServlet.sendMessageToBroker(gson.toJson(new LiftRide("11", "22", "33", "44", "55", "66")));
             }
         }
         long duration = System.nanoTime() - start;

@@ -24,9 +24,9 @@ public class SkierServlet extends HttpServlet {
     // Number of messages to publish in each thread
     private static final int NUM_ITERATIONS = 100;
     // Number of channels to add to pools
-    private static final int NUM_CHANS = 30;
+    private static final int NUM_CHANS = 80;
     // RMQ broker machine
-    private static final String SERVER = "localhost";
+    private static final String SERVER = "54.203.131.15";
     // test queue name
     private static final String QUEUE_NAME = "yjQueue";
 
@@ -36,6 +36,8 @@ public class SkierServlet extends HttpServlet {
     public SkierServlet() throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(SERVER);
+        factory.setUsername("a");
+        factory.setPassword("a");
         Connection conn = factory.newConnection();
         channelPool = new RMQChannelPool(NUM_CHANS, new RMQChannelFactory(conn));
     }
@@ -125,13 +127,13 @@ public class SkierServlet extends HttpServlet {
             Gson gson = new Gson();
             LiftRide liftRide = gson.fromJson(sb.toString(), LiftRide.class);
             // Set additional parameters from the path
-            liftRide.setSkierID(skierID.trim());  // as the last param, it as trailing /n
+            liftRide.setSkierID(skierID.trim());  // as the last param, it has trailing /n
             liftRide.setResortID(resortID);
             liftRide.setSeasonID(seasonID);
             liftRide.setDayID(dayID);
 
 //                System.out.println("Received data: " + liftRide);
-            threadPool.submit(() -> sendMessageToBroker(liftRide.toString()));
+            threadPool.submit(() -> sendMessageToBroker(gson.toJson(liftRide)));
             res.setStatus(HttpServletResponse.SC_CREATED);
             res.getWriter().write(liftRide.toString());
         }catch (Exception e) {

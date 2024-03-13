@@ -21,13 +21,16 @@ import com.google.gson.Gson;
 public class RecvMT {
 
     private final static String QUEUE_NAME = "yjQueue";
-    private final static int NUM_THREADS = 40;
+    private final static int NUM_THREADS = 80;
+    private static final String SERVER = "54.203.131.15";
     private final static ExecutorService threadPool = Executors.newFixedThreadPool(NUM_THREADS);
     private static ConcurrentHashMap<Integer, List<LiftRide>> concurrentMap = new ConcurrentHashMap<>();
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost(SERVER);
+        factory.setUsername("a");
+        factory.setPassword("a");
         final Connection connection = factory.newConnection();
         
         Runnable runnable = new Runnable() {

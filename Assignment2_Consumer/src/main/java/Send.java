@@ -22,10 +22,13 @@ public class Send {
 
     private final static String QUEUE_NAME = "threadExQ";
     private final static int NUM_MESSAGES_PER_THREAD =10;
+    private static final String SERVER = "35.92.149.49";
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost(SERVER);
+        factory.setUsername("a");
+        factory.setPassword("a");
         
         final Connection conn = factory.newConnection();
         Runnable runnable = new Runnable(){

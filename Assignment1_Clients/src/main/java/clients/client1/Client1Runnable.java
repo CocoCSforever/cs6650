@@ -26,6 +26,9 @@ public class Client1Runnable implements Runnable {
     private SkiersApi api;
     private int requestPerThread;
     private ArrayList<LiftRideInfo> requests;
+    private String basePath = "http://lb-1718237016.us-west-2.elb.amazonaws.com/Assignment2_Servlet/";
+//    private String basePath = "http://35.87.206.187:8080/Assignment2_Servlet/";
+//    "http://lb-699851470.us-west-2.elb.amazonaws.com/Assignment2_yijia/"
 
 
     // default constructor
@@ -39,7 +42,7 @@ public class Client1Runnable implements Runnable {
     public void run() {
 //        System.out.println("running client with Success: " + getSuccessCounter());
 //        api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war/");
-        api.getApiClient().setBasePath("http://lb-1600645194.us-west-2.elb.amazonaws.com/Assignment2_yijia/");
+        api.getApiClient().setBasePath(basePath);
         for(LiftRideInfo request: requests){
             makeAsyncApiCall(request);
         }
