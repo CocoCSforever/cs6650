@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
+import dbManager.LiftRideDao;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +30,7 @@ public class SkierServlet extends HttpServlet {
     private static final String SERVER = "54.203.131.15";
     // test queue name
     private static final String QUEUE_NAME = "yjQueue";
+    private LiftRideDao liftRideDao = new LiftRideDao();
 
     private static RMQChannelPool channelPool;
     private static ExecutorService threadPool = Executors.newFixedThreadPool(NUM_THREADS);
@@ -50,7 +52,7 @@ public class SkierServlet extends HttpServlet {
         // check we have a URL!
         if (urlPath == null || urlPath.isEmpty()) {
             res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            res.getWriter().write("missing paramterers");
+            res.getWriter().write("missing parameters");
             return;
         }
 
@@ -88,9 +90,9 @@ public class SkierServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-//        long startTime = System.currentTimeMillis();
         res.setContentType("application/json");
         String urlPath = req.getPathInfo();
+        System.out.println(urlPath);
 
         // check we have a URL!
         if (urlPath == null || urlPath.isEmpty()) {
@@ -131,9 +133,10 @@ public class SkierServlet extends HttpServlet {
             liftRide.setResortID(resortID);
             liftRide.setSeasonID(seasonID);
             liftRide.setDayID(dayID);
+            liftRideDao.createLiftRide(liftRide);
 
 //                System.out.println("Received data: " + liftRide);
-            threadPool.submit(() -> sendMessageToBroker(gson.toJson(liftRide)));
+//            threadPool.submit(() -> sendMessageToBroker(gson.toJson(liftRide)));
             res.setStatus(HttpServletResponse.SC_CREATED);
             res.getWriter().write(liftRide.toString());
         }catch (Exception e) {

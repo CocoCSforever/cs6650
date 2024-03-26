@@ -1,4 +1,7 @@
 db/LiftRide.class
 SkierServlet.class
-RMQ/RMQChannelFactory.class
+dbManager/dbTest.class
+dbManager/LiftRideDao.class
 RMQ/RMQChannelPool.class
+dbManager/DBCPDataSource.class
+RMQ/RMQChannelFactory.class

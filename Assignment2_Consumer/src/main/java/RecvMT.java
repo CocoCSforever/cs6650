@@ -17,6 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
+import db.LiftRide;
+import dbManager.LiftRideDao;
 
 public class RecvMT {
 
@@ -25,6 +27,7 @@ public class RecvMT {
     private static final String SERVER = "54.203.131.15";
     private final static ExecutorService threadPool = Executors.newFixedThreadPool(NUM_THREADS);
     private static ConcurrentHashMap<Integer, List<LiftRide>> concurrentMap = new ConcurrentHashMap<>();
+    private static LiftRideDao liftRideDao = new LiftRideDao();
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
@@ -33,31 +36,29 @@ public class RecvMT {
         factory.setPassword("a");
         final Connection connection = factory.newConnection();
         
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {                 
-                try {
-                    final Channel channel = connection.createChannel();
-                    Gson gson = new Gson();
-                    channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-                    // max one message per receiver
-                    channel.basicQos(1);
-                    System.out.println(" [*] Thread waiting for messages. To exit press CTRL+C");
+        Runnable runnable = () -> {
+            try {
+                final Channel channel = connection.createChannel();
+                Gson gson = new Gson();
+                channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+                // max one message per receiver
+                channel.basicQos(1);
+                System.out.println(" [*] Thread waiting for messages. To exit press CTRL+C");
 
-                    DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                        String message = new String(delivery.getBody(), "UTF-8");
+                DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                    String message = new String(delivery.getBody(), "UTF-8");
 //                        System.out.println(message);
-                        LiftRide liftRide = gson.fromJson(message, LiftRide.class);
-                        System.out.println(liftRide);
-                        addLiftRideToMap(liftRide);
-                        channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                    LiftRide liftRide = gson.fromJson(message, LiftRide.class);
+                    System.out.println(liftRide);
+                    liftRideDao.createLiftRide(liftRide);
+//                        addLiftRideToMap(liftRide);
+                    channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 //                        System.out.println( "Callback thread ID = " + Thread.currentThread().getId() + " Received '" + message + "'");
-                    };
-                    // process messages
-                    channel.basicConsume(QUEUE_NAME, false, deliverCallback, consumerTag -> { });
-                    } catch (IOException ex) {
-                        Logger.getLogger(RecvMT.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                };
+                // process messages
+                channel.basicConsume(QUEUE_NAME, false, deliverCallback, consumerTag -> { });
+                } catch (IOException ex) {
+                    Logger.getLogger(RecvMT.class.getName()).log(Level.SEVERE, null, ex);
             }
         };
 

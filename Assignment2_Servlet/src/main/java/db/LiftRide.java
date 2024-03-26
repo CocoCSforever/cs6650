@@ -19,8 +19,15 @@ public class LiftRide {
         this.seasonID = Integer.parseInt(seasonID);
         this.dayID = Integer.parseInt(dayID);
         this.time = Integer.parseInt(time);
-//        liftRides.add(this);
-//        System.out.println(this);
+    }
+
+    public LiftRide(int skierID, int resortID, int liftID, int seasonID, int dayID, int time) {
+        this.skierID = skierID;
+        this.resortID = resortID;
+        this.liftID = liftID;
+        this.seasonID = seasonID;
+        this.dayID = dayID;
+        this.time = time;
     }
 
     public static List<LiftRide> getLiftRides() {
@@ -49,6 +56,30 @@ public class LiftRide {
 
     public void setTime(String time) {
         this.time = Integer.parseInt(time);
+    }
+
+    public int getSkierID() {
+        return skierID;
+    }
+
+    public int getResortID() {
+        return resortID;
+    }
+
+    public int getLiftID() {
+        return liftID;
+    }
+
+    public int getSeasonID() {
+        return seasonID;
+    }
+
+    public int getDayID() {
+        return dayID;
+    }
+
+    public int getTime() {
+        return time;
     }
 
     @Override
