@@ -93,7 +93,7 @@ public class SkiersApiTest {
 
     @Test
     public void client2SingleRequestTimeTest() throws Exception {
-        try(BufferedWriter bf = new BufferedWriter(new FileWriter("test.csv"))) {
+        try(BufferedWriter bf = new BufferedWriter(new FileWriter("April-test.csv"))) {
             clients.client2.Client2Runnable.setBf(bf);
             bf.write("Start Time,Request Type,Latency,Response Code\n");
             long wallTime =client2StartNThreads(1, 10000, bf);

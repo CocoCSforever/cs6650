@@ -35,7 +35,9 @@ public class Client2Runnable implements Runnable {
     @Override
     public void run() {
 //        System.out.println("running client with Success: " + getSuccessCounter());
-        api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war/");
+        api.getApiClient().setConnectTimeout(500000);
+        api.getApiClient().setReadTimeout(500000);
+        api.getApiClient().setBasePath("http://34.217.57.221:8080/Assignment1_yijia/");
 //        api.getApiClient().setBasePath("http://54.82.80.17:8080/Assignment1_yijia/");
         for(LiftRideInfo request: requests){
             makeAsyncApiCall(request);

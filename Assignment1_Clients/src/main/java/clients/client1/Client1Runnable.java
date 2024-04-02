@@ -26,8 +26,9 @@ public class Client1Runnable implements Runnable {
     private SkiersApi api;
     private int requestPerThread;
     private ArrayList<LiftRideInfo> requests;
-    private String basePath = "http://lb-1718237016.us-west-2.elb.amazonaws.com/Assignment2_Servlet/";
-//    private String basePath = "http://35.87.206.187:8080/Assignment2_Servlet/";
+//    private String basePath = "http://lb-1718237016.us-west-2.elb.amazonaws.com/Assignment2_Servlet/";
+    private String basePath = "http://34.219.15.202:8080/Assignment1_yijia/";
+//    private String basePath = "http://localhost:8080/Assignment2_Servlet_war/";
 //    "http://lb-699851470.us-west-2.elb.amazonaws.com/Assignment2_yijia/"
 
 
@@ -41,8 +42,10 @@ public class Client1Runnable implements Runnable {
     @Override
     public void run() {
 //        System.out.println("running client with Success: " + getSuccessCounter());
-//        api.getApiClient().setBasePath("http://localhost:8080/Assignment1_Servlet_war/");
+//        api.getApiClient().setBasePath("http://localhost:8080/Assignment2_Servlet_war/");
         api.getApiClient().setBasePath(basePath);
+        api.getApiClient().setConnectTimeout(500000);
+        api.getApiClient().setReadTimeout(500000);
         for(LiftRideInfo request: requests){
             makeAsyncApiCall(request);
         }

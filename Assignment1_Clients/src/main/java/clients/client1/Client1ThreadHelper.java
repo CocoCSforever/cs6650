@@ -16,7 +16,7 @@ public class Client1ThreadHelper {
 
         // start to send client requests
         long startTime = System.currentTimeMillis();
-        sendClientRequest(nOfThreads, producerConsumer);
+        sendClientRequest(producerConsumer);
 
         try {
             Client1Runnable.getLatch().await();
@@ -47,16 +47,14 @@ public class Client1ThreadHelper {
     }
     
 
-    public static void sendClientRequest(int nOfThreads, Client1ProducerConsumer producerConsumer){
-//        for (int i = 0; i < nOfThreads; i++) {
-            executor.submit(() -> {
-                try {
-                    producerConsumer.consume();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-//        }
+    public static void sendClientRequest(Client1ProducerConsumer producerConsumer){
+        executor.submit(() -> {
+            try {
+                producerConsumer.consume();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }
 
