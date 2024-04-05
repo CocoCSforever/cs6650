@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan">
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="JMeter Users">
+        <intProp name="ThreadGroup.num_threads">5</intProp>
+        <intProp name="ThreadGroup.ramp_time">5</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">5</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults">
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">8080</stringProp>
+          <stringProp name="HTTPSampler.path">/Assignment3_Servlet_war</stringProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request">
+          <stringProp name="HTTPSampler.path">/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="resortID" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">1</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">resortID</stringProp>
+              </elementProp>
+              <elementProp name="seasonID" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">2024</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">seasonID</stringProp>
+              </elementProp>
+              <elementProp name="dayID" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">${__Random(1,3,)}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">dayID</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <ResultCollector guiclass="TableVisualizer" testclass="ResultCollector" testname="View Results in Table">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename">/Users/mayijia/Desktop/6650/CS6650/Test Plan.jmx</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
+1712167806972,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,JMeter Users 1-1,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,0,0,0
+1712167806982,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,JMeter Users 1-1,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,0,0,0
+1712167806982,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,JMeter Users 1-1,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,0,0,0
+1712167806983,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,JMeter Users 1-1,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,0,0,0
+1712167806983,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,JMeter Users 1-1,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,0,0,0
+1712167807970,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,JMeter Users 1-2,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,0,0,0
+1712167807971,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,JMeter Users 1-2,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,0,0,0
+1712167807972,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,JMeter Users 1-2,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,0,0,0
+1712167807973,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,JMeter Users 1-2,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,0,0,0
+1712167807974,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,JMeter Users 1-2,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,0,0,0
+1712167808967,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,JMeter Users 1-3,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,0,0,0
+1712167808968,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,JMeter Users 1-3,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,0,0,0
+1712167808969,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,JMeter Users 1-3,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,0,0,0
+1712167808970,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,JMeter Users 1-3,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,0,0,0
+1712167808971,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,JMeter Users 1-3,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,0,0,0
+1712167809971,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,JMeter Users 1-4,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,0,0,0
+1712167809972,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,JMeter Users 1-4,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,0,0,0
+1712167809972,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,JMeter Users 1-4,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,0,0,0
+1712167809972,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,JMeter Users 1-4,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,0,0,0
+1712167809972,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,JMeter Users 1-4,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=3,0,0,0
+1712167810973,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,JMeter Users 1-5,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,0,0,0
+1712167810973,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,JMeter Users 1-5,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,0,0,0
+1712167810974,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,JMeter Users 1-5,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=2,0,0,0
+1712167810974,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,JMeter Users 1-5,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,0,0,0
+1712167810975,0,HTTP Request,Non HTTP response code: java.net.URISyntaxException,Non HTTP response message: Illegal character in path at index 31: http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,JMeter Users 1-5,text,false,,1250,0,1,1,http://localhost:8080/resorts/${resortID}/seasons/${seasonID}/day/${dayID}/skiers?resortID=1&seasonID=2024&dayID=1,0,0,0
