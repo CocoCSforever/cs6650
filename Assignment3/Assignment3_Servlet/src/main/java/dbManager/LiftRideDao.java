@@ -49,33 +49,56 @@ public class LiftRideDao {
 
     // GET /resorts/{resortID}/seasons/{seasonID}/day/{dayID}/skierslist
     public int getSkiersForResortDay(int resortID, int seasonID, int dayID) throws SQLException {
-        String sql = "SELECT COUNT(DISTINCT skierID) AS totalSkiers FROM liftRides WHERE resortID = ? AND seasonID = ? AND dayID = ?";
+        // Construct the unique identifier for the visit date from the provided resortID, seasonID, and dayID
+        String visitDate = resortID + "/" + seasonID + "/" + dayID;
+        // SQL command to retrieve the number of skiers from the AggregatedSkierVisits table where the VisitDate matches the constructed identifier
+        String sql = "SELECT NumberOfSkiers FROM SkierVisits WHERE VisitDate = ?";
+
+        // Establishing a connection to the database
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, resortID);
-            stmt.setInt(2, seasonID);
-            stmt.setInt(3, dayID);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("totalSkiers");
-            } else {
-                // Assuming 0 if no skiers found; adjust based on your requirements
-                return 0;
+
+            // Setting the parameter for the prepared statement
+            stmt.setString(1, visitDate);
+
+            // Executing the query and processing the result set
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Returning the count of distinct skiers if found
+                    return rs.getInt("NumberOfSkiers");
+                } else {
+                    // Returning 0 if no matching record is found, indicating no skiers for the specified day
+                    return 0;
+                }
             }
         }
+//        String sql = "SELECT COUNT(DISTINCT skierID) AS totalSkiers FROM LiftRides WHERE resortID = ? AND seasonID = ? AND dayID = ?";
+//        try (Connection conn = dataSource.getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.setInt(1, resortID);
+//            stmt.setInt(2, seasonID);
+//            stmt.setInt(3, dayID);
+//            ResultSet rs = stmt.executeQuery();
+//            if (rs.next()) {
+//                return rs.getInt("totalSkiers");
+//            } else {
+//                // Assuming 0 if no skiers found; adjust based on your requirements
+//                return 0;
+//            }
+//        }
     }
 
     // GET /skiers/{resortID}/seasons/{seasonID}/days/{dayID}/skiers/{skierID}
     // get the total vertical for the skier for the specified ski day
     // return total vertical for the skier+day+resort+season
     public int getVerticalsForSkier(int resortID, int seasonID, int dayID, int skierID) throws SQLException {
-        String sql = "SELECT SUM(liftID * 10) AS totalVertical FROM liftRides WHERE resortID = ? AND seasonID = ? AND dayID = ? AND skierID = ?";
+        String sql = "SELECT SUM(liftID * 10) AS totalVertical FROM LiftRides WHERE skierID = ? AND resortID = ? AND seasonID = ? AND dayID = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, resortID);
-            stmt.setInt(2, seasonID);
-            stmt.setInt(3, dayID);
-            stmt.setInt(4, skierID);
+            stmt.setInt(1, skierID);
+            stmt.setInt(2, resortID);
+            stmt.setInt(3, seasonID);
+            stmt.setInt(4, dayID);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 return rs.getInt("totalVertical");
@@ -100,26 +123,21 @@ public class LiftRideDao {
         ]
     }
      */
-    public List<SeasonVertical> getTotalVerticalForSkier(int skierID, String resortID, String seasonID) throws SQLException {
+    public List<SeasonVertical> getTotalVerticalForSkier(int skierID, int resortID, int seasonID) throws SQLException {
         List<SeasonVertical> seasonVerticals = new ArrayList<>();
-        int sID = 0, rID = 0;
-        if(resortID == null){
-            return seasonVerticals;
-        }else{
-            rID = Integer.valueOf(resortID);
-        }
-        String sql = "SELECT SUM(liftID * 10) AS totalVertical FROM liftRides WHERE skierID = ? AND resortID = ?";
-        if (seasonID != null) {
+
+        String sql = "SELECT seasonID, SUM(liftID * 10) AS totalVertical FROM LiftRides WHERE skierID = ? AND resortID = ?";
+        if (seasonID != -1) {
             sql += " AND seasonID = ?";
-            sID = Integer.valueOf(seasonID);
+//            sID = Integer.valueOf(seasonID);
         }
         sql += " GROUP BY seasonID";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, skierID);
-            stmt.setInt(2, rID);
-            if(seasonID != null){
-                stmt.setInt(3, sID);
+            stmt.setInt(2, resortID);
+            if(seasonID != -1){
+                stmt.setInt(3, seasonID);
             }
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -133,7 +151,7 @@ public class LiftRideDao {
 
     // Future Use: GET /resorts/{resortID}/seasons/{seasonID}/day/{dayID}/skierslist
     public List<Integer> getSkiersListForResortDay(int resortID, int seasonID, int dayID) throws SQLException {
-        String sql = "SELECT DISTINCT skierID FROM liftRides WHERE resortID = ? AND seasonID = ? AND dayID = ?";
+        String sql = "SELECT DISTINCT skierID FROM LiftRides WHERE resortID = ? AND seasonID = ? AND dayID = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, resortID);

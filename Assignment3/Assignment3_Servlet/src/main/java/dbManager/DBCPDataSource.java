@@ -4,7 +4,7 @@ import org.apache.commons.dbcp2.*;
 
 public class DBCPDataSource {
     private static BasicDataSource dataSource;
-    private static final String HOST_NAME = "skier-db.c1q06o0iud3t.us-west-2.rds.amazonaws.com";
+    private static final String HOST_NAME = "skier-db-read1.c1q06o0iud3t.us-west-2.rds.amazonaws.com";
     private static final String PORT = "3306";
     private static final String DATABASE = "skierapi";
     private static final String USERNAME = "root";

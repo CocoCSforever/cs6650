@@ -9,6 +9,14 @@ public class SeasonVertical {
         this.totalVert = totalVert;
     }
 
+    @Override
+    public String toString() {
+        return "SeasonVertical{" +
+                "seasonID='" + seasonID + '\'' +
+                ", totalVert=" + totalVert +
+                '}';
+    }
+
     // Getters and Setters
     public String getSeasonID() {
         return seasonID;

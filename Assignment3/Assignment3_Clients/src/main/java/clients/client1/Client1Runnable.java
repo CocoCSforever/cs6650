@@ -24,7 +24,7 @@ public class Client1Runnable implements Runnable {
     private int requestPerThread;
     private ArrayList<LiftRideInfo> requests;
 //    private String basePath = "http://lb-1718237016.us-west-2.elb.amazonaws.com/Assignment2_Servlet/";
-    private String basePath = "http://35.89.83.23:8080/Assignment3_Servlet/";
+    private String basePath = "http://54.214.86.230:8080/Assignment3_Servlet_war/";
 //    private String basePath = "http://localhost:8080/Assignment2_Servlet_war/";
 //    "http://lb-699851470.us-west-2.elb.amazonaws.com/Assignment2_yijia/"
 

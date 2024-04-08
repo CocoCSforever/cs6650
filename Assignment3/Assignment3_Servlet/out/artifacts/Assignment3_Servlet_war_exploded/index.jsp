@@ -3,7 +3,7 @@
 <body>
     <h2>Hello World!</h2>
     <div id="liftRidesContainer">
-        version1
+        Test doGet good
 <%--        <%= LiftRide.getLiftRides() %>--%>
     </div>
 </body>

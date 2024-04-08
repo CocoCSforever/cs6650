@@ -74,7 +74,7 @@ public class ResortServlet extends HttpServlet {
             // TODO: query DB
             int numbersOfSkiers = liftRideDao.getSkiersForResortDay(Integer.valueOf(resortID), Integer.valueOf(seasonID), Integer.valueOf(dayID));
             res.setStatus(HttpServletResponse.SC_OK);
-            res.getWriter().write(numbersOfSkiers);
+            res.getWriter().write(numbersOfSkiers + "");
         }catch (Exception e) {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad URL path parameters: " + urlPath + e.getMessage());
             e.printStackTrace();

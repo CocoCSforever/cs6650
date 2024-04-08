@@ -32,11 +32,11 @@ public class LiftRideInfo {
   Integer skierID;
 
   public LiftRideInfo(Random r) {
-    this.body = new LiftRide(r.nextInt(360) + 1, r.nextInt(40) + 1);
+    this.body = new LiftRide(r.nextInt(360) + 1, r.nextInt(600) + 1);
     this.resortID = 1;
     this.seasonID = "2024";
     this.dayID = "3";
-    this.skierID = r.nextInt(10000) + 1;
+    this.skierID = r.nextInt(100000) + 1;
   }
 
   public LiftRide getBody() {

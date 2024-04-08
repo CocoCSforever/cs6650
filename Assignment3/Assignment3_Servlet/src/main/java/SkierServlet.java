@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
-
+import org.json.JSONObject;
 import db.SeasonVertical;
 import dbManager.LiftRideDao;
 
@@ -46,7 +46,8 @@ public class SkierServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        res.setContentType("text/plain");
+//        res.setContentType("text/plain");
+        res.setContentType("application/json");
         String urlPath = req.getPathInfo();
 
         // check we have a URL!
@@ -76,24 +77,41 @@ public class SkierServlet extends HttpServlet {
 
                 int verticals = liftRideDao.getVerticalsForSkier(Integer.valueOf(resortID), Integer.valueOf(seasonID), Integer.valueOf(dayID), Integer.valueOf(skierID));
                 res.setStatus(HttpServletResponse.SC_OK);
-                res.getWriter().write(verticals);
+                res.getWriter().write(verticals + "");
             }else{
                 String skierID = urlParts[1];
+                StringBuilder sb = new StringBuilder();
+                String line;
+
+
                 String[] body = new String[2];
                 int i = 0;
                 // Extract values from req.body
                 String s;
-                while ((s = req.getReader().readLine()) != null) {
-                    if(i == 1 && i == 2){
-                        body[i-1] = s.split(": ")[1];
-                    }
-                    i++;
+                while ((line = req.getReader().readLine()) != null) {
+                    sb.append(line);
+//                    if(i == 1 || i == 2){
+//                        body[i-1] = s.split(": ")[1];
+//                    }
+//                    i++;
                 }
-                List<SeasonVertical> seasonVerticals = liftRideDao.getTotalVerticalForSkier(Integer.valueOf(skierID), body[0], body[1]);
 
+                String jsonString = sb.toString();
+                JSONObject jsonObject = new JSONObject(jsonString);
+                int resort = jsonObject.optInt("resort", -1); // -1 is a default value if "resort" key doesn't exist
+                int season = jsonObject.optInt("season", -1);
+
+//                // if resortID is not provided
+                if(resort == -1){
+                    throw new Exception("resortID is not provided");
+                }
+//                body[0] = body[0].substring(0, body[1].length() - 1);
+
+                List<SeasonVertical> seasonVerticals = liftRideDao.getTotalVerticalForSkier(Integer.valueOf(skierID), resort, season);
+                Gson gson = new Gson();
 
                 res.setStatus(HttpServletResponse.SC_OK);
-                res.getWriter().write("It works!"+urlPath);
+                res.getWriter().write(gson.toJson(seasonVerticals));
             }
         }catch (Exception e) {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad URL path parameters: " + urlPath + e.getMessage());
@@ -102,7 +120,7 @@ public class SkierServlet extends HttpServlet {
     }
 
     private boolean isUrlValid(String[] urlParts, boolean post) {
-        // TODO: validate the request url path according to the API spec
+        // Validate the request url path according to the API spec
         // POST
         // urlPath  = "/1/seasons/2019/days/1/skiers/123"
         // urlParts = [, 1, seasons, 2019, days, 1, skiers, 123]
